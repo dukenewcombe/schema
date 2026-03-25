@@ -403,7 +403,8 @@
               "properties": {
                 "cpus": {"type": "string"},
                 "memory": {"type": "string"},
-                "generic_resources": {"$ref": "#/definitions/generic_resources"}
+                "generic_resources": {"$ref": "#/definitions/generic_resources"},
+                "devices": {"$ref": "#/definitions/devices"}
               },
               "additionalProperties": false
             }
