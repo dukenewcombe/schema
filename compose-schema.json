@@ -1,7 +1,7 @@
 
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "config_schema_v3.9.json",
+  "id": "compose-schema.json",
   "type": "object",
   "required": ["version"],
 
