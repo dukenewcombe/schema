@@ -1,0 +1,245 @@
+name: Hiroshi
+version: 1.0.0
+schema: v1
+
+x-autocomplete: &autocomp
+  debounceDelay: 250        #Delay before triggering autocomplete in milliseconds.
+  maxPromptTokens: 1024     #Maximum number of tokens for the autocomplete prompt.
+  #modelTimeout:            #Model timeout for autocomplete requests in milliseconds.
+  #maxSuffixPercentage:     #Maximum percentage of prompt allocated for suffix.
+  #prefixPercentage:        #Percentage of input allocated for prefix.
+  transform: true           #If false, disables trimming of multiline completions. Defaults to true. Useful for models that generate better multiline completions without transformations.
+  onlyMyCode: true          #Only includes code within the repository for context.
+  useCache: true            #If true, enables caching for completions.
+  useImports: true          #If true, includes imports in context.
+  useRecentlyEdited: true   #If true, includes recently edited files in context.
+  useRecentlyOpened: true   #If true, includes recently opened files in context.
+
+x-nucleus: &nucleus
+  apiBase: http://10.100.101.26:11434
+
+x-delta: &delta
+  apiBase: http://127.0.0.1:11434
+
+x-default: &default
+  provider: ollama
+  <<: *nucleus
+  autocompleteOptions: 
+    <<: *autocomp
+  roles:
+    - apply
+    - autocomplete
+    - edit
+    - embed
+    - chat
+    - rerank
+    - summarize
+  capabilities:
+    - tool_use
+    - image_input
+  defaultCompletionOptions:
+      keepAlive: 300
+      reasoning: false # Boolean to enable thinking/reasoning
+      temperature: 0.3  #Values range from 0.0 (deterministic) to 1.0 (random)
+
+models:
+  - name: Nucleus.QCoder2.5:1.5
+    model: qwen2.5-coder:1.5b
+    <<: *default
+    roles:
+      - autocomplete
+    capabilities:
+      - tool_use
+    
+  - name: Nucleus.QCoder2.5:3
+    model: qwen2.5-coder:3b
+    <<: *default
+    roles:
+      - autocomplete
+    capabilities:
+      - tool_use
+
+  - name: Nucleus.QCoder2.5:14
+    model: qwen2.5-coder:14b
+    <<: *default
+    capabilities:
+      - tool_use
+    roles:
+        - apply
+        - edit
+        - chat
+        - summarize
+    
+  - name: Nucleus.DeepseekCoder2:16
+    model: deepseek-coder-v2:latest
+    <<: *default
+    roles:
+        - apply
+        - edit
+        - chat
+        - summarize
+    capabilities:
+      - tool_use
+
+  - name: Nucleus.Qwen3.0:14
+    model: qwen3:14b
+    <<: *default
+    roles:
+        - apply
+        - edit
+        - chat
+        - summarize
+    
+  - name: Nucleus.Q3.5:9
+    model: qwen3.5:9b
+    <<: *default
+    roles:
+        - apply
+        - edit
+        - chat
+        - summarize
+    defaultCompletionOptions:
+      keepAlive: 3600
+      reasoning: true # Boolean to enable thinking/reasoning
+      temperature: 0.8  #Values range from 0.0 (deterministic) to 1.0 (random)
+
+  - name: Nucleus.Q3Embed
+    model: qwen3-embedding:8b
+    <<: *default
+    roles:
+        - embed
+################################# Delta ###########################################
+  - name: Delta.QCoder2.5:1.5
+    model: qwen2.5-coder:1.5b
+    <<: [*delta,*default]
+    roles:
+      - autocomplete
+    capabilities:
+      - tool_use
+    
+  - name: Delta.QCoder2.5:3
+    model: qwen2.5-coder:3b
+    <<: [*delta,*default]
+    roles:
+      - autocomplete
+    capabilities:
+      - tool_use
+
+  - name: Delta.QCoder2.5:14
+    model: qwen2.5-coder:14b
+    <<: [*delta,*default]
+    capabilities:
+      - tool_use
+    roles:
+        - apply
+        - edit
+        - chat
+        - summarize
+    
+  - name: Delta.DeepseekCoder2:16
+    model: deepseek-coder-v2:latest
+    <<: [*delta,*default]
+    roles:
+        - apply
+        - edit
+        - chat
+        - summarize
+    capabilities:
+      - tool_use
+
+  - name: Delta.Qwen3.0:14
+    model: qwen3:14b
+    <<: [*delta,*default]
+    roles:
+        - apply
+        - edit
+        - chat
+        - summarize
+    
+  - name: Delta.Q3.5:9
+    model: qwen3.5:9b
+    <<: [*delta,*default]
+    roles:
+        - apply
+        - edit
+        - chat
+        - summarize
+    defaultCompletionOptions:
+      keepAlive: 3600
+      reasoning: true # Boolean to enable thinking/reasoning
+      temperature: 0.8  #Values range from 0.0 (deterministic) to 1.0 (random)
+
+  - name: Delta.Q3Embed
+    model: qwen3-embedding:8b
+    <<: [*delta,*default]
+    roles:
+        - embed
+
+
+
+#models:
+#  - name: CodeGamma   
+#    provider: ollama
+#    apiBase: http://10.100.101.26:11434
+#    model: codegemma:2b
+#    roles:
+#       - apply
+#       - autocomplete
+#       - edit
+#       - embed
+#       - chat
+#       - rerank
+#       - summarize
+#    autocompleteOptions:
+#      debounceDelay: 250        #Delay before triggering autocomplete in milliseconds.
+#      maxPromptTokens: 1024     #Maximum number of tokens for the autocomplete prompt.
+#      #modelTimeout:            #Model timeout for autocomplete requests in milliseconds.
+#      #maxSuffixPercentage:     #Maximum percentage of prompt allocated for suffix.
+#      #prefixPercentage:        #Percentage of input allocated for prefix.
+#      transform: true           #If false, disables trimming of multiline completions. Defaults to true. Useful for models that generate better multiline completions without transformations.
+#      onlyMyCode: true          #Only includes code within the repository for context.
+#      useCache: true            #If true, enables caching for completions.
+#      useImports: true          #If true, includes imports in context.
+#      useRecentlyEdited: true   #If true, includes recently edited files in context.
+#      useRecentlyOpened: true   #If true, includes recently opened files in context.
+#      #maxPromptTokens:        
+#    capabilities:
+#      - tool_use
+#      - image_input
+#    defaultCompletionOptions:
+#      keepAlive: 6000
+#      reasoning: false # Boolean to enable thinking/reasoning
+#      temperature: 0.3  #Values range from 0.0 (deterministic) to 1.0 (random)
+# rules:
+#   - Give concise responses
+#   - Always assume TypeScript rather than JavaScript
+# prompts:
+#   - name: test
+#     description: Unit test a function
+#     prompt: |
+#       Please write a complete suite of unit tests for this function. You should use the Jest testing framework.
+#       The tests should cover all possible edge cases and should be as thorough as possible.
+#       You should also include a description of each test case.
+#   - uses: myprofile/my-favorite-prompt
+# context:
+#   - provider: diff
+#   - provider: file
+#   - provider: code
+# mcpServers:
+#   - name: DevServer
+#     command: npm
+#     args:
+#       - run
+#       - dev
+#     env:
+#       PORT: "3000"
+# data:
+#   - name: My Private Company
+#     destination: https://mycompany.com/ingest
+#     schema: 0.2.0
+#     level: noCode
+#     events:
+#       - autocomplete
+#       - chatInteraction
+ 
+
